@@ -24,7 +24,7 @@ All code is well-documented with comments explaining the purpose and functionali
 
 ## Demo Video
 There is a demo video file included to see a walkthrough of the project on localhost
-
+[click here to watch the demo with YouTube](https://youtu.be/zJx0Vpga77s)
 
 ### Project Structure
 ├── mvnw
