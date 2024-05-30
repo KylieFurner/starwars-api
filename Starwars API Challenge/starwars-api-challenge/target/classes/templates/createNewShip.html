@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Ship</title>
+    <link rel="stylesheet" href="createstyling.css">
+    
+    <script>
+        // Function to handle form submission
+        async function submitForm(event) {
+            event.preventDefault();    // Prevent the default form submission
+            
+            // Retrieve input values from the form
+            const name = document.getElementById('name').value;
+            const model = document.getElementById('model').value;
+            const costInCredits =  document.getElementById('costInCredits').value;
+
+            // Construct the ship object
+            const ship = {
+                name: name,
+                model: model,
+                costInCredits: costInCredits
+            };
+
+            try{ 
+                // Send a POST request to create a new ship
+                const response = await fetch('/ship', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(ship)
+                });
+
+                if (response.ok) {
+                    // If creation is successful, show success message and reset the form
+                    alert('Ship created successfully!');
+                    document.getElementById('shipForm').reset();
+                } else {
+                    // If creation fails, show an error message
+                    alert('Failed to create ship');
+                }
+        } catch (error) {
+            // Handle any network or server error
+            alert('Error: ' + error.message);
+        }
+        }
+    </script>
+</head>
+<body>
+    <h1>Create New Ship</h1>
+    <form id="shipForm" onsubmit="submitForm(event)">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" required>
+        <br>
+        <label for="costInCredits">Cost In Credits:</label>
+        <input type="text" id="costInCredits" name="costInCredits" required>
+        <br>
+        <button type="submit">Create Ship</button>
+    </form>
+</body>
+</html>

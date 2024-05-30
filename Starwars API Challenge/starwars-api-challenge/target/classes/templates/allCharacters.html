@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang='en'>
+<link rel="stylesheet" href="tablestyle.css">
+<head>
+    <title>Characters</title>
+</head>
+<body>
+    <!-- Title/Header Section -->
+    <h1>Characters</h1>
+    
+    <!-- Table Section -->
+    <table border="1">
+        <thead>
+            <!-- Table Header Row -->
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Home Planet</th>
+                <th>Starships</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table Body Rows -->
+            <!-- Iterate over each character object in the list -->
+            <tr th:each="character : ${characters}">
+                <td th:text="${character.id}"></td>
+                <td th:text="${character.name}"></td>
+                <td th:text="${character.homePlanet}"></td>
+                <td th:text="${character.starships}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

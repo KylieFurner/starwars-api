@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Planet</title>
+    <link rel="stylesheet" href="createstyling.css">
+    
+    <script>
+        // Function to handle form submission
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            // Retrieve input values from the form
+            const name = document.getElementById('name').value;
+            const climate = document.getElementById('climate').value;
+            const population =  document.getElementById('population').value;
+
+            // Construct the planet object
+            const planet = {
+                name: name,
+                climate: climate,
+                population: population
+            };
+            
+            try {
+                // Send a POST request to create a new planet
+                const response = await fetch('/planet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(planet)
+                });
+
+                if (response.ok) {
+                    // If creation is successful, show success message and reset the form
+                    alert('Planet created successfully!');
+                    document.getElementById('planetForm').reset();
+                } else {
+                    // If creation fails, show an error message
+                    alert('Failed to create planet');
+                }
+            } catch (error) {
+                // Handle any network or server error
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</head>
+<body>
+    <section>
+        <h1>Create New Planet</h1>
+    </section>
+    <!-- Form to create a new planet -->
+    <form id="planetForm" onsubmit="submitForm(event)">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="climate">Climate:</label>
+        <input type="text" id="climate" name="climate" required>
+        <br>
+        <label for="population">Population:</label>
+        <input type="text" id="population" name="population" required>
+        <br>
+        <!-- Button to submit the form and create the planet -->
+        <button type="submit">Create Planet</button>
+    </form>
+</body>
+</html>

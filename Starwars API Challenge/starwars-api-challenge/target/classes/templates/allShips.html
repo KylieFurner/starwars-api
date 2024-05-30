@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang='en'>
+<link rel="stylesheet" href="tablestyle.css">
+<head>
+    <title>Ships</title>
+</head>
+<body>
+    <!-- Title/Header Section -->
+    <h1>Ships</h1>
+
+    <!-- Table Section -->
+    <table border="1">
+        <thead>
+            <!-- Table Header Row -->
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Model</th>
+                <th>Cost In Credits</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table Body Rows -->
+            <!-- Iterate over each ship object in the list -->
+            <tr th:each="ship : ${ships}">
+                <td th:text="${ship.id}"></td>
+                <td th:text="${ship.name}"></td>
+                <td th:text="${ship.model}"></td>
+                <td th:text="${ship.costInCredits}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search, Update, and Delete Planets by ID</title>
+    <link rel="stylesheet" href="searchstyling.css">
+    <script>
+        // Function to fetch planet details based on the provided ID
+        async function fetchPlanet() {
+            const planetIdInput = document.getElementById('planetId').value;
+            const planetId = parseInt(planetIdInput, 10);
+            
+            // Check if the input is a valid number
+            if (isNaN(planetId)) {
+                document.getElementById('planetResult').innerHTML = `
+                    <p style="color: red;">Please enter a valid number for the Planet ID.</p>
+                `;
+                document.getElementById('updateButton').style.display = 'none';
+                document.getElementById('deleteButton').style.display = 'none';
+                return;
+            }
+
+            try {
+                // Fetch the planet details from the server
+                const response = await fetch('/planet/' + planetId);
+                if (!response.ok) {
+                    throw new Error('Planet not found');
+                }
+
+                // Display the planet details if found
+                const planet = await response.json();
+                document.getElementById('planetResult').innerHTML = `
+                    <h2>Planet Details</h2>
+                    <p>ID: ${planet.id}</p>
+                    <p>Name: ${planet.name}</p>
+                    <p>Climate: ${planet.climate}</p>
+                    <p>Population: ${planet.population}</p>
+                `;
+                // Show update and delete buttons
+                document.getElementById('updateButton').style.display = 'block';
+                document.getElementById('deleteButton').style.display = 'block';
+
+                // Populate update form fields with current planet details
+                document.getElementById('planetIdToUpdate').value = planet.id;
+                document.getElementById('nameToUpdate').value = planet.name;
+                document.getElementById('climateToUpdate').value = planet.climate;
+                document.getElementById('populationToUpdate').value = planet.population;
+            } catch (error) {
+                // Display error message if planet is not found
+                document.getElementById('planetResult').innerHTML = `
+                    <p style="color: red;">${error.message}</p>
+                `;
+
+                document.getElementById('updateButton').style.display = 'none';
+                document.getElementById('deleteButton').style.display = 'none';
+            }
+            }
+            // Function to open the update form
+            function openUpdateForm() {
+                document.getElementById('updateForm').style.display = 'block';
+                document.getElementById('updateButton').style.display = 'none';
+            }
+
+            // Function to update the planet details
+            async function updatePlanet() {
+                    const planetId = document.getElementById('planetIdToUpdate').value;
+                    const name = document.getElementById('nameToUpdate').value;
+                    const climate = document.getElementById('climateToUpdate').value;
+                    const population = document.getElementById('populationToUpdate').value;
+        
+                    const planet = {
+                        id: planetId,
+                        name: name,
+                        climate: climate,
+                        population: population
+                    };
+                    try {
+                        // Send the updated planet details to the server
+                        const response = await fetch('/planet/' + planetId, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(planet)
+                        });
+                        if (!response.ok) {
+                            throw new Error('Failed to update planet');
+                        }
+
+                        // Display success message and refresh planet details
+                        document.getElementById('updateMessage').innerHTML = `
+                            <p style="color: green;">Planet updated successfully!</p>
+                        `;
+                        fetchPlanet();  // Refresh planet details after update
+                    } catch (error) {
+                        // Display error message if update fails
+                        document.getElementById('updateMessage').innerHTML = `
+                            <p style="color: red;">${error.message}</p>
+                        `;
+                    }
+                }
+
+                // Function to delete the planet
+                async function deletePlanet() {
+                    const planetId = document.getElementById('planetIdToUpdate').value;
+                    
+                    // Confirmation box before deleting
+                    const confirmDelete = confirm("Are you sure you want to delete this planet?");
+                    if (!confirmDelete) {
+                        return; // User canceled the action
+                    }
+                    try {
+                        // Send delete request to the server
+                        const response = await fetch('/planet/' + planetId, {
+                            method: 'DELETE'
+                        });
+                        if (!response.ok) {
+                            throw new Error('Failed to delete planet');
+                        }
+
+                        // Display success message and clear planet details
+                        document.getElementById('deleteMessage').innerHTML = `
+                            <p style="color: green;">Planet deleted successfully!</p>
+                        `;
+                        document.getElementById('planetResult').innerHTML = '';
+                        document.getElementById('updateForm').style.display = 'none';
+                        document.getElementById('deleteButton').style.display = 'none';
+                    } catch (error) {
+                        // Display error message if deletion fails
+                        document.getElementById('deleteMessage').innerHTML = `
+                            <p style="color: red;">${error.message}</p>
+                        `;
+                    }
+                }
+    
+    </script>
+</head>
+<body>
+    <!-- Title and input for planet ID -->
+    <h1>Search for a Planet by ID</h1>
+    <input type="text" id="planetId" placeholder="Enter Planet ID">
+    <button type="button" onclick="fetchPlanet()">Search</button>
+
+    <!-- Display planet details -->
+    <div id="planetResult"></div>
+
+    <!-- Update and delete buttons -->
+    <button type="button", onclick=openUpdateForm() id="updateButton" style="display: none;">Update This Planet</button>
+    <div id="updateForm" style="display: none;">
+        <h2>Update Planet</h2>
+        <input type="hidden" id="planetIdToUpdate">
+        <label for="nameToUpdate">Name:</label>
+        <input type="text" id="nameToUpdate" required><br>
+        <label for="climateToUpdate">Climate:</label>
+        <input type="text" id="climateToUpdate" required><br>
+        <label for="populationToUpdate">Population:</label>
+        <input type="text" id="populationToUpdate" required><br>
+        <button type="button" onclick="updatePlanet()">Update Planet</button>
+        <div id="updateMessage"></div>
+    </div>
+
+    <button type="button" id="deleteButton" style="display: none;" onclick="deletePlanet()">Delete Planet</button>
+    <div id="deleteMessage"></div>
+
+    <!-- Link to view all planets -->
+    <a href="/allPlanets"><button>Click to view all Planets</button></a>
+</body>
+</html>

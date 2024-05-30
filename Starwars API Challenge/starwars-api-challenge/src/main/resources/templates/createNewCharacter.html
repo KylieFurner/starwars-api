@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Character</title>
+    <link rel="stylesheet" href="createstyling.css">
+    
+    <script>
+        async function fetchMaxPlanetId() {
+            // Fetches the maximum planet ID from the backend API
+            try {
+                const response = await fetch('/maxPlanetId');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch max planet ID');
+                }
+                const maxId = await response.json();
+                return maxId;
+            } catch (error) {
+                console.error('Error fetching max planet ID:', error);
+                return null;
+            }
+        }
+
+        async function fetchMaxShipId() {
+            // Fetches the maximum ship ID from the backend API
+            try {
+                const response = await fetch('/maxShipId');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch max ship ID');
+                }
+                const maxId = await response.json();
+                return maxId;
+            } catch (error) {
+                console.error('Error fetching max ship ID:', error);
+                return null;
+            }
+        }
+        
+        async function createCharacter() {
+            // Validates the homePlanet and starships fields, then creates a new character via a POST request to the backend API
+            const name = document.getElementById('name').value;
+            const homePlanet = document.getElementById('homePlanet').value;
+            const starships =  document.getElementById('starships').value;
+
+            // Fetch the maximum planet ID to validate homePlanet
+            const maxPlanetId = await fetchMaxPlanetId();
+            if (maxPlanetId !== null && homePlanet !== '' && !isNaN(homePlanet)) {
+                const homePlanetId = parseInt(homePlanet, 10);
+                if (homePlanetId < 0 || homePlanetId > maxPlanetId) {
+                    alert('The homePlanet ID is out of range, meaning the planet does not exist. You can create a new planet or search the planets to find what you are looking for.');
+                    return;
+                }
+            }
+
+            // Fetch the maximum ship ID to validate starships
+            const maxShipId = await fetchMaxShipId();
+            if (maxShipId !== null && starships !== '' && !isNaN(starships)) {
+                const starshipsId = parseInt(starships, 10);
+                if (starshipsId < 0 || starshipsId > maxShipId) {
+                    alert('The starships ID is out of range, meaning the starship does not exist. You can create a new starship or search the starships to find what you are looking for.');
+                    return;
+                }
+            }
+
+            // Prepare the character object to be sent in the POST request
+            const character = {
+                name: name,
+                homePlanet: homePlanet,
+                starships: starships
+            };
+            
+            try {
+                // Send a POST request to create a new character
+                const response = await fetch('/character', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(character)
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to create character');
+                }
+                // Show success message and reset the form
+                alert('Character created successfully');
+                document.getElementById('characterForm').reset();
+            } catch (error) {
+                // Show error message if there's an issue creating the character
+                alert('Error: ' + error.message);
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <section>
+        <h1>Create New Character</h1>
+    </section>
+    <div class="form-container">
+        <form id="characterForm" onsubmit="event.preventDefault(); createCharacter();">
+            <!-- Input fields for creating a new character -->
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <br>
+            <label for="homePlanet">Home Planet:</label>
+            <input type="text" id="homePlanet" name="homePlanet" required>
+            <br>
+            <label for="starships">Starships:</label>
+            <input type="text" id="starships" name="starships" required>
+            <br>
+            <!-- Button to submit the form and create the character -->
+            <button type="submit">Create Character</button>
+        </form>
+    </div>
+</body>
+</html>
